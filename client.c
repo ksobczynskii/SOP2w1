@@ -34,16 +34,17 @@ ssize_t bulk_read(int fd, char* buf, size_t nbyte)
 void write_to_fifo(int fifo, int file)
 {
     pid_t pid = getpid();
-    printf("pid == %d\n",pid);
+    // printf("pid == %d\n",pid);
     char buf1[PIPE_BUF];
     char *buf;
-    memcpy(&pid, buf1,sizeof(pid_t));
+    memcpy(buf1, &pid,sizeof(pid_t));
+    // *((pid_t *)buf1) = getpid();
     buf = buf1 + sizeof(pid_t);
-
+    // printf("sizeof(pid_t) == %ld\n", sizeof(pid_t));
     ssize_t bytes_read;
-    while ((bytes_read = read(file,buf ,BUF_SIZE)) > 0)
+    while ((bytes_read = read(file,buf,BUF_SIZE)) > 0)
     {
-        printf("Read %s from source. read %ld bytes\n", buf1,bytes_read);
+        // printf("Read %s from source. read %ld bytes\n", buf,bytes_read);
         if (bytes_read != BUF_SIZE)
         {
             memset(buf+bytes_read,0,BUF_SIZE - bytes_read);
@@ -78,6 +79,6 @@ int main(int argc, char** argv)
         ERR("close fifo");
     if (close(file) < 0)
         ERR("close file");
-    printf("Client stops writing ... \n");
+    // printf("Client stops writing ... \n");
     exit(EXIT_SUCCESS);
 }
