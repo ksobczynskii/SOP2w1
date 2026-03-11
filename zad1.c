@@ -24,9 +24,17 @@ void usage(char *name)
 void child_work(int reader, int writer) {
     char buf[4];
     srand(getpid());
+    ssize_t bytes;
     while (1) {
-        if (read(reader,buf,sizeof(int)) < 0)
+        if ((bytes = read(reader,buf,sizeof(int))) < 0)
             ERR("read");
+        if (bytes==0) {
+            if (close(reader) < 0)
+                ERR("close");
+            if (close(writer) < 0)
+                ERR("close");
+            return;
+        }
         int x = *((int*)buf);
         printf("Process [%d] received %d\n", getpid(), x);
         if (x==0) {
